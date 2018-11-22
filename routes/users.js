@@ -1,7 +1,8 @@
 var express = require('express'),
-  router = express.Router();
+  router = express.Router(),
+  bcrypt = require('bcryptjs');
 
-/* GET users listing. */
+// Basic route - unused
 router.get('/', function(req, res, next) {
   res.locals.connection.query('SELECT * FROM users', function (error, results, fields) {
    if(error) throw error;
@@ -9,26 +10,34 @@ router.get('/', function(req, res, next) {
  });
 })
 
-// GET single user by id
+// Route for login
 .post('/login', function(req, res, next) {
   let email = req.body.email.toString(),
     password = req.body.password.toString();
   let message = '';
   res.locals.connection.query("SELECT username, usersId, password FROM users WHERE email = ?", email, function (error, results, fields) {
-   if(error) throw error;
-   if(results[0] == undefined){
-     message = 'No user with that email exists';
-   } else if(results[0].password !== password){
-     message = 'Password does not match with the user on record';
-   }
-   if(message === ''){
-     res.send(JSON.stringify(results[0]));
-   } else {
-     res.send(JSON.stringify([message]));
-   }
- });
+    if(error) throw error;
+    if(results[0] == undefined){
+      res.send(JSON.stringify(['No user with that email exists']));
+    } else{
+      bcrypt.compare(password, results[0].password,(err, outcome)=>{
+        if (err) { throw (err); }
+        if(!outcome){
+          res.send(JSON.stringify(['Password does not match with the user on record']));
+        } else {
+          if(message === ''){
+            delete results[0].password;
+            res.send(JSON.stringify(results[0]));
+          } else {
+            res.send(JSON.stringify([message]));
+          }
+        }
+      })
+    }
+  })
 })
 
+// Route for register with backend validations
 .post('/', function(req, res, next) {
   let userName = req.body.userName.toString(),
     email = req.body.email.toString(),
@@ -70,9 +79,12 @@ router.get('/', function(req, res, next) {
       if(results[0] != undefined){
         res.send(JSON.stringify(['A user with this email already exists']));
       } else {
-        res.locals.connection.query("INSERT INTO users (username, email, password) VALUES ('" + userName + "', '" + email + "', '" + password + "') ", function (error, results, fields) {
-          if(error) throw error;
-          res.send(JSON.stringify(results));
+        password = bcrypt.hash(password, 10, (err, hash)=>{
+          if (err) { throw (err); }
+          res.locals.connection.query("INSERT INTO users (username, email, password) VALUES ('" + userName + "', '" + email + "', '" + hash + "') ", function (error, results, fields) {
+            if(error) throw error;
+            res.send(JSON.stringify(results));
+          });
         });
       }
     });
