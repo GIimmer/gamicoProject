@@ -6,7 +6,8 @@ This project uses the MERN stack - MySQL, Express, ReactJS, Node
 
 In order to test the website you'll need to...
 1) Clone it into a GIT repository.
-2) Set up a table on MySQL entitled users, with the required parameters. Run the MySQL server. I have attached a script to create the correct table.
+2) Set up a table on MySQL entitled users, with the required parameters. Run the MySQL server. 
+    - If the reader is from Gamico; check the email sent to James - I attached a script!
 3) using GIT bash or Powershell "cd" into the main folder and type npm install (which should install all dependencies locally)
 4) change the app.js file such that the MySQL information matches your own.
 5) npm start
