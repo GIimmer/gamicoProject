@@ -2,16 +2,9 @@ var express = require('express'),
   router = express.Router(),
   bcrypt = require('bcryptjs');
 
-// Basic route - unused
-router.get('/', function(req, res, next) {
-  res.locals.connection.query('SELECT * FROM users', function (error, results, fields) {
-   if(error) throw error;
-   res.send(JSON.stringify(results));
- });
-})
-
-// Route for login
-.post('/login', function(req, res, next) {
+// Route for login, checks to see if the user exists in database, then hashes the POSTed password to see if it matches that users hash
+// Returns message to ReactJS depending on usermatch and passmatch conditions noted above.
+router.post('/login', function(req, res, next) {
   let email = req.body.email.toString(),
     password = req.body.password.toString();
   let message = '';
@@ -37,7 +30,23 @@ router.get('/', function(req, res, next) {
   })
 })
 
-// Route for register with backend validations
+// Function for checking if email is already in database while a user is typing in Register email field 
+// Returns Boolean (True == email is unique)
+.post('/checkUnique', function(req, res, next) {
+  let email = req.body.email.toString();
+  res.locals.connection.query("SELECT * FROM users WHERE email = ?", email, function (error, results, fields){
+    if(error) throw error;
+    if(results[0] != undefined){
+      res.send(JSON.stringify(false));
+    } else {
+      res.send(JSON.stringify(true));
+    }
+  });
+})
+
+// Route for register with backend validations; checks all but confirm password conditions like register.
+// My implementation DOES NOT check if the username is unique, because this was not a requirement - but it would be easy to implement
+// Returns either a list of error messages or the usersId
 .post('/', function(req, res, next) {
   let userName = req.body.userName.toString(),
     email = req.body.email.toString(),
