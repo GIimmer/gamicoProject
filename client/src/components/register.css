@@ -1,0 +1,44 @@
+body{
+    background-color: #ebebeb;
+}
+.outerDiv{
+    background-color: #ebebeb;
+}
+.form-group{
+    background-color: white;
+    box-shadow: 3px 3px 5px 0px rgb(155, 155, 155);
+}
+.inputField  {
+    margin-top: 8px;
+  }
+  
+.spacer{
+    height: 8vh
+}
+.form-row{
+    margin: 14px 0px 0px;
+}
+.form-control{
+    margin: 0px;
+}
+label{
+    font-weight: bold;
+    font-size: 14pt;
+    margin: 0px;
+    padding: 2px;
+}
+p{
+    margin: 0px;
+    padding: 2px;
+}
+
+ul{
+    color: red;
+    list-style-type: none;
+    text-align: center;
+    margin: 0px;
+    padding: 0px;
+}
+.linky{
+    font-size: 17pt;
+}
